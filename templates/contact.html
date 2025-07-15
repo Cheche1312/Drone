@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact Us - DJI Drone Store</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    .navbar-brand { font-weight: bold; font-size: 1.5rem; }
+    .hero-section {
+      background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1508614589041-895b88991e3e?w=1200&h=600&fit=crop');
+      background-size: cover; background-position: center; height: 60vh;
+      display: flex; align-items: center; justify-content: center;
+      color: white; text-align: center;
+    }
+    .card {
+      transition: transform 0.3s ease; border: none;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1); height: 100%;
+    }
+    .card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+    .feature-box {
+      background-color: #f8f9fa; border-radius: 16px; padding: 2rem;
+      text-align: center; height: 100%; transition: transform 0.3s ease;
+    }
+    .feature-box:hover { transform: translateY(-5px); box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
+    .feature-box i {
+      font-size: 2rem; color: #0d6efd; background-color: #e7f1ff;
+      padding: 1rem; border-radius: 1rem; display: inline-block; margin-bottom: 1rem;
+    }
+    .contact-info-card {
+      background-color: #f8f9fa; border-radius: 16px; padding: 2rem;
+      height: 100%; border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .contact-info-item {
+      display: flex; align-items: center; margin-bottom: 1.5rem; padding: 1rem;
+      background-color: white; border-radius: 12px; transition: transform 0.3s ease;
+    }
+    .contact-info-item:hover { transform: translateX(5px); }
+    .contact-info-item i {
+      font-size: 1.5rem; color: #0d6efd; background-color: #e7f1ff;
+      padding: 0.75rem; border-radius: 50%; margin-right: 1rem;
+      width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;
+    }
+    .form-control:focus {
+      border-color: #0d6efd; box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
+    .btn-primary {
+      background-color: #0d6efd; border-color: #0d6efd;
+      padding: 0.75rem 2rem; font-weight: 600; transition: all 0.3s ease;
+    }
+    .btn-primary:hover {
+      background-color: #0b5ed7; border-color: #0a58ca; transform: translateY(-2px);
+    }
+    .map-container {
+      height: 450px; background-color: #f8f9fa; border-radius: 16px;
+      overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .map-container iframe {
+      width: 100%; height: 100%; border: none; border-radius: 16px;
+    }
+    .success-alert { animation: slideInDown 0.5s ease-out; }
+    @keyframes slideInDown {
+      from { opacity: 0; transform: translateY(-30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .social-links a {
+      display: inline-block; width: 40px; height: 40px; background-color: #6c757d;
+      color: white; border-radius: 50%; text-align: center; line-height: 40px;
+      margin-right: 10px; transition: all 0.3s ease;
+    }
+    .social-links a:hover { background-color: #0d6efd; transform: translateY(-3px); }
+  </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6NPW-ATpZYSeXA9io3pf2IC6D_IVbQ1Rp9-QQJfof9xd4me9rLE9-xVM4VEcAOofcZ3Q&usqp=CAU" alt="DJI Logo" height="40">
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
+        <li class="nav-item"><a class="nav-link active" href="/contact">Contact Us</a></li>
+      </ul>
+      <div class="navbar-nav">
+        <a class="btn btn-primary" href="#contact">Get In Touch</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<section class="hero-section">
+  <div class="container text-center">
+    <h1 class="display-4 fw-bold mb-4">Contact DJI</h1>
+    <p class="lead mb-4">Get in touch with our team for support, partnerships, or general inquiries about our innovative drone solutions</p>
+    <a href="#contact-form" class="btn btn-light btn-lg">Send us a Message</a>
+  </div>
+</section>
+
+<section id="contact-form" class="py-5">
+  <div class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="row">
+          <div class="col-12">
+            {% for category, message in messages %}
+              <div class="alert alert-{{ 'danger' if category == 'danger' else 'success' }} alert-dismissible fade show" role="alert">
+                <i class="fas fa-{{ 'exclamation-circle' if category == 'danger' else 'check-circle' }} me-2"></i>
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <div class="row g-5">
+      <div class="col-lg-7">
+        <div class="card">
+          <div class="card-body p-4">
+            <h3 class="fw-bold mb-4">Send us a Message</h3>
+            <form method="POST" action="{{ url_for('contact_us') }}" id="contactForm">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label for="name" class="form-label fw-semibold">Full Name *</label>
+                  <input type="text" class="form-control form-control-lg" id="name" name="name" required>
+                </div>
+                <div class="col-md-6">
+                  <label for="email" class="form-label fw-semibold">Email Address *</label>
+                  <input type="email" class="form-control form-control-lg" id="email" name="email" required>
+                </div>
+                <div class="col-md-6">
+                  <label for="phone" class="form-label fw-semibold">Phone Number</label>
+                  <input type="tel" class="form-control form-control-lg" id="phone" name="phone">
+                </div>
+                <div class="col-md-6">
+                  <label for="subject" class="form-label fw-semibold">Subject *</label>
+                  <select class="form-select form-select-lg" id="subject" name="subject" required>
+                    <option value="">Select a subject</option>
+                    <option value="Technical Support">Technical Support</option>
+                    <option value="Product Inquiry">Product Inquiry</option>
+                    <option value="Partnership Opportunity">Partnership Opportunity</option>
+                    <option value="Media & Press">Media & Press</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div class="col-12">
+                  <label for="message" class="form-label fw-semibold">Message *</label>
+                  <textarea class="form-control form-control-lg" id="message" name="message" rows="6" required></textarea>
+                </div>
+                <div class="col-12">
+                  <button type="submit" class="btn btn-primary btn-lg w-100">
+                    <i class="fas fa-paper-plane me-2"></i>Send Message
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-5">
+        <div class="contact-info-card">
+          <h3 class="fw-bold mb-4">Get in Touch</h3>
+
+          <div class="contact-info-item">
+            <i class="fas fa-map-marker-alt"></i>
+            <div>
+              <h6 class="fw-bold mb-1">Our Location</h6>
+              <p class="mb-0 text-muted">14th Floor, West Wing, Skyworth Semiconductor Design Building<br>No.18 Gaoxin South 4th Ave, Nanshan District<br>Shenzhen, China 518057</p>
+            </div>
+          </div>
+
+          <div class="contact-info-item">
+            <i class="fas fa-phone"></i>
+            <div>
+              <h6 class="fw-bold mb-1">Phone & Support</h6>
+              <p class="mb-0 text-muted">Phone: +86 755 2667 3888<br>Support: 1-800-DJI-HELP<br>Fax: +86 755 2667 3889</p>
+            </div>
+          </div>
+
+          <div class="contact-info-item">
+            <i class="fas fa-envelope"></i>
+            <div>
+              <h6 class="fw-bold mb-1">Email</h6>
+              <p class="mb-0 text-muted">General: info@dji.com<br>Support: support@dji.com<br>Press: press@dji.com</p>
+            </div>
+          </div>
+
+          <div class="contact-info-item">
+            <i class="fas fa-clock"></i>
+            <div>
+              <h6 class="fw-bold mb-1">Business Hours</h6>
+              <p class="mb-0 text-muted">Monday - Friday: 9:00 AM - 6:00 PM<br>Saturday: 10:00 AM - 4:00 PM<br>Sunday: Closed</p>
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <h6 class="fw-bold mb-3">Follow Us</h6>
+            <div class="social-links">
+              <a href="#"><i class="fab fa-facebook-f"></i></a>
+              <a href="#"><i class="fab fa-twitter"></i></a>
+              <a href="#"><i class="fab fa-instagram"></i></a>
+              <a href="#"><i class="fab fa-youtube"></i></a>
+              <a href="#"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="row g-4 text-center">
+      <div class="col-md-6 col-lg-3">
+        <div class="feature-box">
+          <i class="fas fa-headset"></i>
+          <h5 class="mt-3 fw-bold">24/7 Support</h5>
+          <p class="text-muted">Round-the-clock technical support for all your DJI products</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="feature-box">
+          <i class="fas fa-shipping-fast"></i>
+          <h5 class="mt-3 fw-bold">Fast Shipping</h5>
+          <p class="text-muted">Quick delivery worldwide with tracking and insurance</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="feature-box">
+          <i class="fas fa-tools"></i>
+          <h5 class="mt-3 fw-bold">Expert Service</h5>
+          <p class="text-muted">Professional repair and maintenance services</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="feature-box">
+          <i class="fas fa-award"></i>
+          <h5 class="mt-3 fw-bold">Warranty</h5>
+          <p class="text-muted">Comprehensive warranty coverage for peace of mind</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <div class="text-center mb-5">
+          <h3 class="fw-bold">Find Our Headquarters</h3>
+          <p class="text-muted">Visit us at our main office in Shenzhen, China</p>
+        </div>
+        <div class="map-container">
+          <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3677.5982982469745!2d113.94456731495677!3d22.53854548516934!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3403e7c1b3e5c7c7%3A0x9b4e5f3b7a1e6f3b!2sSkyworth%20Semiconductor%20Design%20Building!5e0!3m2!1sen!2sus!4v1634567890123!5m2!1sen!2sus" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="DJI Headquarters Location"></iframe>
+        </div>
+        <div class="row mt-4 text-center">
+          <div class="col-md-4">
+            <div class="p-3">
+              <i class="fas fa-map-marker-alt text-primary fa-2x mb-2"></i>
+              <h6 class="fw-bold">Exact Address</h6>
+              <p class="text-muted small">14th Floor, West Wing, Skyworth Semiconductor Design Building, No.18 Gaoxin South 4th Ave, Nanshan District, Shenzhen 518057</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="p-3">
+              <i class="fas fa-subway text-primary fa-2x mb-2"></i>
+              <h6 class="fw-bold">Nearest Metro</h6>
+              <p class="text-muted small">University Town Station (Line 1), Exit A, 10 minutes walk</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="p-3">
+              <i class="fas fa-car text-primary fa-2x mb-2"></i>
+              <h6 class="fw-bold">Parking</h6>
+              <p class="text-muted small">Underground parking available in the Skyworth Building</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="bg-dark text-light pt-5 mt-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4 mb-4">
+        <h5 class="fw-bold">DJI</h5>
+        <p>Pioneering the future of aerial technology with innovative drone solutions for professionals and enthusiasts worldwide.</p>
+        <div class="d-flex gap-2">
+          <a href="#" class="text-light"><i class="fab fa-facebook fa-lg p-2 bg-secondary rounded-circle"></i></a>
+          <a href="#" class="text-light"><i class="fab fa-twitter fa-lg p-2 bg-secondary rounded-circle"></i></a>
+          <a href="#" class="text-light"><i class="fab fa-instagram fa-lg p-2 bg-secondary rounded-circle"></i></a>
+          <a href="#" class="text-light"><i class="fab fa-youtube fa-lg p-2 bg-secondary rounded-circle"></i></a>
+          <a href="#" class="text-light"><i class="fab fa-linkedin fa-lg p-2 bg-secondary rounded-circle"></i></a>
+        </div>
+      </div>
+      <div class="col-md-2 mb-4">
+        <h6 class="fw-bold">Company</h6>
+        <ul class="list-unstyled">
+          <li><a href="#" class="text-light text-decoration-none">About Us</a></li>
+          <li><a href="#" class="text-light text-decoration-none">Careers</a></li>
+          <li><a href="#" class="text-light text-decoration-none">Press</a></li>
+        </ul>
+      </div>
+      <div class="col-md-2 mb-4">
+        <h6 class="fw-bold">Products</h6>
+        <ul class="list-unstyled">
+          <li><a href="#" class="text-light text-decoration-none">Consumer Drones</a></li>
+          <li><a href="#" class="text-light text-decoration-none">Enterprise Drones</a></li>
+          <li><a href="#" class="text-light text-decoration-none">Accessories</a></li>
+        </ul>
+      </div>
+      <div class="col-md-4 mb-4">
+        <h6 class="fw-bold">Subscribe to our Newsletter</h6>
+        <form class="d-flex">
+          <input type="email" class="form-control me-2" placeholder="Enter your email" />
+          <button class="btn btn-outline-light" type="submit">Subscribe</button>
+        </form>
+      </div>
+    </div>
+    <div class="text-center py-3 border-top border-light">
+      <small>© 2025 DJI Drone Store. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
