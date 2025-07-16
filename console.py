@@ -1,8 +1,14 @@
+
+
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
+from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileRequired, FileAllowed
+from wtforms import StringField, TextAreaField, PasswordField, SubmitField
+from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 import os
 from datetime import datetime
 
@@ -31,6 +37,7 @@ login_manager.init_app(app)
 login_manager.login_view = 'signin'
 login_manager.login_message_category = 'info'
 
+# Your existing models remain the same
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True, nullable=False)
@@ -55,6 +62,55 @@ class Contact(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     is_read = db.Column(db.Boolean, default=False)
 
+# WTForms Form Classes
+class RegistrationForm(FlaskForm):
+    username = StringField('Username', validators=[
+        DataRequired(), 
+        Length(min=3, max=100, message='Username must be between 3 and 100 characters')
+    ])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    phone = StringField('Phone', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[
+        DataRequired(), 
+        Length(min=6, message='Password must be at least 6 characters')
+    ])
+    confirm_password = PasswordField('Confirm Password', validators=[
+        DataRequired(), 
+        EqualTo('password', message='Passwords must match')
+    ])
+    submit = SubmitField('Register')
+
+    def validate_username(self, username):
+        user = User.query.filter_by(username=username.data).first()
+        if user:
+            raise ValidationError('Username already exists. Please choose a different one.')
+
+    def validate_email(self, email):
+        user = User.query.filter_by(email=email.data).first()
+        if user:
+            raise ValidationError('Email already exists. Please choose a different one.')
+
+class LoginForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    submit = SubmitField('Sign In')
+
+class ContactForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    phone = StringField('Phone')
+    subject = StringField('Subject', validators=[DataRequired()])
+    message = TextAreaField('Message', validators=[DataRequired()])
+    submit = SubmitField('Send Message')
+
+class CardForm(FlaskForm):
+    description = TextAreaField('Description', validators=[DataRequired()])
+    image = FileField('Image', validators=[
+        FileRequired(),
+        FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Images only!')
+    ])
+    submit = SubmitField('Add Card')
+
 @login_manager.user_loader
 def load_user(user_id):
     return db.session.get(User, int(user_id))
@@ -70,56 +126,38 @@ def about():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    if request.method == 'POST':
-        username = request.form.get('username', '').strip()
-        email = request.form.get('email', '').strip()
-        phone = request.form.get('phone', '').strip()
-        password = request.form.get('password', '')
-
-        if not all([username, email, phone, password]):
-            flash('All fields are required', 'danger')
-        elif len(username) < 3:
-            flash('Username must be at least 3 characters', 'danger')
-        elif len(password) < 6:
-            flash('Password must be at least 6 characters', 'danger')
-        elif User.query.filter_by(username=username).first():
-            flash('Username already exists', 'danger')
-        elif User.query.filter_by(email=email).first():
-            flash('Email already exists', 'danger')
-        else:
-            try:
-                is_admin = User.query.count() == 0
-                new_user = User(
-                    username=username,
-                    email=email,
-                    phone=phone,
-                    password_hash=generate_password_hash(password),
-                    is_admin=is_admin
-                )
-                db.session.add(new_user)
-                db.session.commit()
-                flash('Registration successful! You can now log in.', 'success')
-                return redirect(url_for('signin'))
-            except:
-                db.session.rollback()
-                flash('Registration failed. Try again.', 'danger')
-    return render_template('register.html')
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        try:
+            is_admin = User.query.count() == 0
+            new_user = User(
+                username=form.username.data,
+                email=form.email.data,
+                phone=form.phone.data,
+                password_hash=generate_password_hash(form.password.data),
+                is_admin=is_admin
+            )
+            db.session.add(new_user)
+            db.session.commit()
+            flash('Registration successful! You can now log in.', 'success')
+            return redirect(url_for('signin'))
+        except:
+            db.session.rollback()
+            flash('Registration failed. Try again.', 'danger')
+    return render_template('register.html', form=form)
 
 @app.route('/signin', methods=['GET', 'POST'])
 def signin():
-    if request.method == 'POST':
-        username = request.form.get('username', '').strip()
-        password = request.form.get('password', '')
-
-        user = User.query.filter_by(username=username).first()
-
-        if user and check_password_hash(user.password_hash, password):
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data).first()
+        if user and check_password_hash(user.password_hash, form.password.data):
             login_user(user)
             flash(f'Welcome back, {user.username}!', 'success')
             return redirect(url_for('admin_dashboard' if user.is_admin else 'user_page'))
         else:
             flash('Invalid username or password', 'danger')
-    return render_template('signin.html')
+    return render_template('signin.html', form=form)
 
 @app.route('/logout')
 @login_required
@@ -136,37 +174,24 @@ def user_page():
 
 @app.route('/contact', methods=['GET', 'POST'])
 def contact_us():
-    if request.method == 'POST':
+    form = ContactForm()
+    if form.validate_on_submit():
         try:
-            name = request.form.get('name', '').strip()
-            email = request.form.get('email', '').strip()
-            phone = request.form.get('phone', '').strip()
-            subject = request.form.get('subject', '').strip()
-            message = request.form.get('message', '').strip()
-
-            if not all([name, email, subject, message]):
-                flash('All required fields must be filled', 'danger')
-                return redirect(url_for('contact_us'))
-
             new_contact = Contact(
-                name=name,
-                email=email,
-                phone=phone if phone else None,
-                subject=subject,
-                message=message
+                name=form.name.data,
+                email=form.email.data,
+                phone=form.phone.data if form.phone.data else None,
+                subject=form.subject.data,
+                message=form.message.data
             )
-
             db.session.add(new_contact)
             db.session.commit()
-
             flash('Thank you for your message! We\'ll get back to you within 24 hours.', 'success')
             return redirect(url_for('contact_us'))
-
         except:
             db.session.rollback()
             flash('An error occurred. Please try again.', 'danger')
-            return redirect(url_for('contact_us'))
-    return render_template('contact.html')
+    return render_template('contact.html', form=form)
 
 @app.route('/admin')
 @login_required
@@ -244,26 +269,23 @@ def add_card():
         flash('Admin access only.', 'danger')
         return redirect(url_for('home'))
 
-    if request.method == 'POST':
-        description = request.form.get('description', '')
-        file = request.files.get('image')
+    form = CardForm()
+    if form.validate_on_submit():
+        file = form.image.data
+        filename = secure_filename(file.filename)
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(filepath)
 
-        if not file or file.filename == '':
-            flash('Image is required.', 'danger')
-            return redirect(request.url)
+        new_card = Card(
+            image_filename=filename, 
+            description=form.description.data
+        )
+        db.session.add(new_card)
+        db.session.commit()
+        flash('Card added successfully!', 'success')
+        return redirect(url_for('admin_dashboard'))
 
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(filepath)
-
-            new_card = Card(image_filename=filename, description=description)
-            db.session.add(new_card)
-            db.session.commit()
-            flash('Card added successfully!', 'success')
-            return redirect(url_for('admin_dashboard'))
-
-    return render_template('add_card.html')
+    return render_template('add_card.html', form=form)
 
 @app.route('/admin/delete_card/<int:card_id>', methods=['POST'])
 @login_required
