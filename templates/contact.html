@@ -126,39 +126,31 @@
         <div class="card">
           <div class="card-body p-4">
             <h3 class="fw-bold mb-4">Send us a Message</h3>
-            <form method="POST" action="{{ url_for('contact_us') }}" id="contactForm">
+            <form method="POST" action="{{ url_for('contact_us') }}">
+              {{ form.hidden_tag() }}
               <div class="row g-3">
                 <div class="col-md-6">
-                  <label for="name" class="form-label fw-semibold">Full Name *</label>
-                  <input type="text" class="form-control form-control-lg" id="name" name="name" required>
+                  {{ form.name.label(class="form-label fw-semibold") }}
+                  {{ form.name(class="form-control form-control-lg", placeholder="Full Name") }}
                 </div>
                 <div class="col-md-6">
-                  <label for="email" class="form-label fw-semibold">Email Address *</label>
-                  <input type="email" class="form-control form-control-lg" id="email" name="email" required>
+                  {{ form.email.label(class="form-label fw-semibold") }}
+                  {{ form.email(class="form-control form-control-lg", placeholder="Email Address") }}
                 </div>
                 <div class="col-md-6">
-                  <label for="phone" class="form-label fw-semibold">Phone Number</label>
-                  <input type="tel" class="form-control form-control-lg" id="phone" name="phone">
+                  {{ form.phone.label(class="form-label fw-semibold") }}
+                  {{ form.phone(class="form-control form-control-lg", placeholder="Phone Number") }}
                 </div>
                 <div class="col-md-6">
-                  <label for="subject" class="form-label fw-semibold">Subject *</label>
-                  <select class="form-select form-select-lg" id="subject" name="subject" required>
-                    <option value="">Select a subject</option>
-                    <option value="Technical Support">Technical Support</option>
-                    <option value="Product Inquiry">Product Inquiry</option>
-                    <option value="Partnership Opportunity">Partnership Opportunity</option>
-                    <option value="Media & Press">Media & Press</option>
-                    <option value="Other">Other</option>
-                  </select>
+                  {{ form.subject.label(class="form-label fw-semibold") }}
+                  {{ form.subject(class="form-select form-select-lg") }}
                 </div>
                 <div class="col-12">
-                  <label for="message" class="form-label fw-semibold">Message *</label>
-                  <textarea class="form-control form-control-lg" id="message" name="message" rows="6" required></textarea>
+                  {{ form.message.label(class="form-label fw-semibold") }}
+                  {{ form.message(class="form-control form-control-lg", rows="6", placeholder="Write your message...") }}
                 </div>
                 <div class="col-12">
-                  <button type="submit" class="btn btn-primary btn-lg w-100">
-                    <i class="fas fa-paper-plane me-2"></i>Send Message
-                  </button>
+                  {{ form.submit(class="btn btn-primary btn-lg w-100") }}
                 </div>
               </div>
             </form>
@@ -169,7 +161,6 @@
       <div class="col-lg-5">
         <div class="contact-info-card">
           <h3 class="fw-bold mb-4">Get in Touch</h3>
-
           <div class="contact-info-item">
             <i class="fas fa-map-marker-alt"></i>
             <div>
@@ -177,7 +168,6 @@
               <p class="mb-0 text-muted">14th Floor, West Wing, Skyworth Semiconductor Design Building<br>No.18 Gaoxin South 4th Ave, Nanshan District<br>Shenzhen, China 518057</p>
             </div>
           </div>
-
           <div class="contact-info-item">
             <i class="fas fa-phone"></i>
             <div>
@@ -185,7 +175,6 @@
               <p class="mb-0 text-muted">Phone: +86 755 2667 3888<br>Support: 1-800-DJI-HELP<br>Fax: +86 755 2667 3889</p>
             </div>
           </div>
-
           <div class="contact-info-item">
             <i class="fas fa-envelope"></i>
             <div>
@@ -193,7 +182,6 @@
               <p class="mb-0 text-muted">General: info@dji.com<br>Support: support@dji.com<br>Press: press@dji.com</p>
             </div>
           </div>
-
           <div class="contact-info-item">
             <i class="fas fa-clock"></i>
             <div>
@@ -201,7 +189,6 @@
               <p class="mb-0 text-muted">Monday - Friday: 9:00 AM - 6:00 PM<br>Saturday: 10:00 AM - 4:00 PM<br>Sunday: Closed</p>
             </div>
           </div>
-
           <div class="mt-4">
             <h6 class="fw-bold mb-3">Follow Us</h6>
             <div class="social-links">
@@ -263,29 +250,6 @@
         </div>
         <div class="map-container">
           <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3677.5982982469745!2d113.94456731495677!3d22.53854548516934!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3403e7c1b3e5c7c7%3A0x9b4e5f3b7a1e6f3b!2sSkyworth%20Semiconductor%20Design%20Building!5e0!3m2!1sen!2sus!4v1634567890123!5m2!1sen!2sus" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="DJI Headquarters Location"></iframe>
-        </div>
-        <div class="row mt-4 text-center">
-          <div class="col-md-4">
-            <div class="p-3">
-              <i class="fas fa-map-marker-alt text-primary fa-2x mb-2"></i>
-              <h6 class="fw-bold">Exact Address</h6>
-              <p class="text-muted small">14th Floor, West Wing, Skyworth Semiconductor Design Building, No.18 Gaoxin South 4th Ave, Nanshan District, Shenzhen 518057</p>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="p-3">
-              <i class="fas fa-subway text-primary fa-2x mb-2"></i>
-              <h6 class="fw-bold">Nearest Metro</h6>
-              <p class="text-muted small">University Town Station (Line 1), Exit A, 10 minutes walk</p>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="p-3">
-              <i class="fas fa-car text-primary fa-2x mb-2"></i>
-              <h6 class="fw-bold">Parking</h6>
-              <p class="text-muted small">Underground parking available in the Skyworth Building</p>
-            </div>
-          </div>
         </div>
       </div>
     </div>
